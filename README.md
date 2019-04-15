@@ -1,4 +1,4 @@
-![Blueprint diagram](https://us.ciandt.com/themes/custom/ciandt/images/ciandt-logo-for-light.png)
+![CI&T Logo](https://us.ciandt.com/themes/custom/ciandt/images/ciandt-logo-for-light.png)
 
 We are a global digital technology solutions partner, a pioneer in design thinking, lean digital transformation, and advanced technologies. For over 20 years, CI&T has been a trusted partner of industry leading brands. This bluprint was created by our spetialist team to help you on your digital solutions path.
 
@@ -53,6 +53,14 @@ The Google Cloud environment provide all we need to build, test and package our 
 **Running Environments**
 
 To provide a simple to use and maintain environment we will use the Google Kubernets Engine (GKE) with Istio to have a full microservices chassi to build upon. 
+
+## Blue/Green and Canary Deployments with Google Cloud, Istio
+
+### Blue/Green diagram
+![Blueprint deployment](./blue-green.png)
+
+Follow this guide to implement a blue/green deployment strategy using Google Cloud targeting a polyglot application deployed to an GKE Cluster using Helm. Istio is used to shape traffic to different versions of the same microservice giving full control on what your users see and controlling the flow of releases throughout the pipeline.
+
 
 ### Useful links
 ---
