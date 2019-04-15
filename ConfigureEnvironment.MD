@@ -1,5 +1,14 @@
 ![CI&T Logo](https://us.ciandt.com/themes/custom/ciandt/images/ciandt-logo-for-light.png)
 
+
+### Building the application
+---
+
+
+
+
+
+
 ### Deploy GKE Environment
 ---
 
@@ -13,7 +22,7 @@ gcloud config set compute/zone [COMPUTE_ZONE]
 gcloud container clusters create foocluster
 ```
 
-### Testing the environment
+***Testing the environment (optional)***
 
 Creating the Deployment
 To run hello-app in your cluster, run the following command:
