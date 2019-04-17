@@ -205,7 +205,38 @@ tags:
   - "CI"
 ```
 
-**Note:** one thing to notice is that the version of image tag, is the commit from the GIT REPOSITORY, with that we are able to always keep track of witch code is deployed in each environment.
+**Note:** one thing to notice is that the version of image tag, is the commit from the GIT REPOSITORY, with that we are able to always keep track of witch code is deployed in each environment. And ther is also need to change the docker-compose.yaml
+
+```yaml
+version: '2'
+services:
+  # Dependencies if any
+
+
+  # FooApp Application
+  application:
+    #cannot be build for it to work
+    image: "gcr.io/${PROJECT_ID}/fooapp:${SHORT_SHA}"
+    #application name is very importante for the test
+    container_name: application
+    networks:
+      - cloudbuild
+    ports:
+      - "8080:8080"
+    environment:
+      - "SERVER_PORT:8080"
+
+# Connect to the existing cloudbuild network
+networks:
+  cloudbuild:
+    external: true
+```
+
+The propertie `SHORT_SHA` is only set for the SCM trugger build. To trigger it manually just run the following 
+
+```bash
+gcloud builds submit --config app/cloudbuild.yaml --substitutions=SHORT_SHA="[SHORT_SHA_REPLACEMENT]" .
+```
 
 ### Deploying the application to other environments (setp 5)
 ---
