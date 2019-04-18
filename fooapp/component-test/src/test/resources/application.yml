@@ -1,0 +1,3 @@
+fooapp:
+  ribbon:
+    listOfServers: http://application:8080

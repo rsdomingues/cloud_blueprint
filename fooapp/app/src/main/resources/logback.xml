@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property name="APP_NAME" value="Checkout"/>
+
+    <!-- Send debug messages to System.out -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!-- By default, encoders are assigned the type ch.qos.logback.classic.encoder.PatternLayoutEncoder -->
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %X{X-B3-TraceId:-} %X{X-B3-SpanId:-} %level %logger{35} [%t] %msg%n%ex{full}</pattern>
+        </encoder>
+    </appender>
+
+
+    <if condition='isDefined("GRAYLOG_HOST")'>
+        <then>
+            <property name="GRAYLOG_HOST" value="${GRAYLOG_HOST}"/>
+            <property name="GRAYLOG_PORT" value="${GRAYLOG_PORT}"/>
+            <property name="APP_ENV" value="${APP_ENV}"/>
+
+            <appender name="DEFAULT_GRAYLOG_UDP_APPENDER" class="me.moocar.logbackgelf.GelfUDPAppender">
+                <remoteHost>${GRAYLOG_HOST}</remoteHost>
+                <port>${GRAYLOG_PORT}</port>
+                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                    <providers>
+                        <loggerName/>
+                        <threadName/>
+                        <message/>
+                        <arguments/>
+                        <version/>
+                        <stackTrace/>
+                        <pattern>
+                            <pattern>
+                                {
+                                "logLevel": "%level",
+                                "facility": "GELF",
+                                "source": "${HOSTNAME}",
+                                "app_env": "${APP_ENV}",
+                                "application_name": "${APP_NAME}",
+                                "trace": "%X{X-B3-TraceId:-}",
+                                "span": "%X{X-B3-SpanId:-}",
+                                "parent": "%X{X-B3-ParentSpanId:-}"
+                                }
+                            </pattern>
+                        </pattern>
+                    </providers>
+                </encoder>
+            </appender>
+        </then>
+    </if>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <if condition='isDefined("GRAYLOG_HOST")'>
+            <then>
+                <appender-ref ref="DEFAULT_GRAYLOG_UDP_APPENDER"/>
+            </then>
+        </if>
+    </root>
+
+    <logger name="com.fooapp" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <if condition='isDefined("GRAYLOG_HOST")'>
+            <then>
+                <appender-ref ref="DEFAULT_GRAYLOG_UDP_APPENDER"/>
+            </then>
+        </if>
+    </logger>
+
+    <logger name="com.netflix.hystrix.AbstractCommand" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT"/>
+        <if condition='isDefined("GRAYLOG_HOST")'>
+            <then>
+                <appender-ref ref="DEFAULT_GRAYLOG_UDP_APPENDER"/>
+            </then>
+        </if>
+    </logger>
+
+</configuration>

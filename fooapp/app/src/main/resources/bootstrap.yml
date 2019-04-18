@@ -1,0 +1,14 @@
+spring:
+    application:
+        name: Fooapp
+    cloud:
+        config:
+            #to enable just turn this to true
+            enabled: false
+            fail-fast: true
+            retry:
+                initial-interval: 1000
+                max-interval: 2000
+                max-attempts: 100
+            uri: http://configserver:123456@localhost:8888
+            label: local
