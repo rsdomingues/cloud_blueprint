@@ -1,0 +1,11 @@
+#Build the application and the package it a docker iamge
+steps:
+
+#Eensure tests and coverage on every commit
+- name: 'gcr.io/cloud-builders/mvn:3.5.0-jdk-8'
+  args: ['verify', 'package', '-q']
+  dir: 'fooapp/app'
+
+#For easy filter
+tags:
+  - "On Commit Build"
