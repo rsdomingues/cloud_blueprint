@@ -54,4 +54,4 @@ steps:
 
 #For easy filter
 tags:
-  - "Deploy to Developer environment"
+  - "devDeploy"

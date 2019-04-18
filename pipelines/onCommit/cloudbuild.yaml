@@ -8,4 +8,4 @@ steps:
 
 #For easy filter
 tags:
-  - "On Commit Build"
+  - "onCommitBuild"
