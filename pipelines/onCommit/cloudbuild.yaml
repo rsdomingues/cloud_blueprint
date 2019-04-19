@@ -1,4 +1,4 @@
-#Build the application and the package it a docker iamge
+#Ensure companys policies for the code
 steps:
 
 #Ensure tests and coverage on every commit
