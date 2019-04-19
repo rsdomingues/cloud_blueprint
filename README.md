@@ -3,7 +3,7 @@ A FinServ microservice DevOps blueprint to kickstart a successful software devel
 
 This repository contains instructions for implanting our opinioneted DevOps workflow on GCP to facilitate the creation of microservices solutions, that are compliance to industry standards and regulations and still provide the development team a fast and realiable environment.
 
-This blueprint helps you visualize what a modern development workflow looks like and how it could be implemented in organizations at scale,using a baseline definition that can be expanded as needed depending on specific requirements.
+This blueprint helps you visualize what a modern development workflow looks like and how it could be implemented in organizations at scale, using a baseline definition that can be expanded as needed depending on specific requirements.
 
 # Blueprint Description
 
@@ -11,7 +11,7 @@ In general lines, we are going to build a development flow that enables develope
 
 The following diagram shows the main responsabilitys, we will explore in more details each phase and step of the process.
 
-![Strategic Workflow](./strategic_workflow.png)
+![Strategic Workflow](./images/strategic_workflow.png)
 
 
 This flow is designed to allows collaborators to leverage an agile workflow while tracking all work items for regulatory purposes. The tight integration offered by the GKE solution simplifies the deployment and operations of a Kubernetes based “service mesh” and enables teams to dynamically scale the application infrastructure with confidence and agility. All covered with an DevOps Flow that enable security and speed.
@@ -28,7 +28,7 @@ For this DevOps workflow we need an sample app, for this we are going to use the
 **Development process**
 To give our developer the ability to focus on the application managment part we are going to build a fully automated pipeline that will take our code to produciton. For compliance and security we are going to insert "control gates" on the pipeline for our binaries, so that we can ensure that the "builded and tested" aplication is deployed sucessully in risk free way to the production environment.
 
-![Developer Flow](./developer_flow.png)
+![Developer Flow](./images/developer_flow.png)
 
 **Source Control Managment**
 
@@ -55,7 +55,7 @@ In that matter GCP is verry well positioned with the Google Kubernets Engine (GK
 In this blueprint we will explore only the cloud GKE environment to execute deployment, but it can be easyly adjust for [GKE on-prem](https://cloud.google.com/gke-on-prem/) or [Anthos](https://cloud.google.com/anthos/) usecases.
 
 ### Deployment strategy
-![Blueprint deployment](./blue-green.png)
+![Blueprint deployment](./images/blue-green.png)
 
 Blue/Green deployment strategy using Google Cloud targeting a polyglot application deployed to an GKE Cluster. Istio is used to shape traffic to different versions of the same microservice giving full control on what your users see and controlling the flow of releases throughout the pipeline.
 
