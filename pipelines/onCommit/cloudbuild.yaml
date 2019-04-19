@@ -8,7 +8,7 @@ steps:
 
 #Run the github a build check
 - name: 'gcr.io/cloud-builders/curl'
-  args: ['-u', 'rsdomingues:492e88706ac0a93eb8a6edff62be8deadcd6a956', '-X', 'POST', '-d', '{"state": "success","target_url": "https://console.cloud.google.com/cloud-build/builds/83c6f197-bb0e-4005-8369-bb3cb0231d16","description": "The build succeeded!","context": "continuous-integration/cloudbuild"}', 'https://api.github.com/repos/rsdomingues/cloud_blueprint/statuses/54de2b2e94cf06e2d30f2f55428a896f607576da']
+  args: ['-u', 'rsdomingues:$_GITHUB_TOKEN', '-X', 'POST', '-d', '{"state": "success","target_url": "https://console.cloud.google.com/cloud-build/builds/$BUILD_ID","description": "The build succeeded!","context": "continuous-integration/cloudbuild"}', 'https://api.github.com/repos/rsdomingues/cloud_blueprint/statuses/$COMMIT_SHA']
   dir:
 
 #For easy filter
