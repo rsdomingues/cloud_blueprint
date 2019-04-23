@@ -10,6 +10,10 @@ echo -e "\e[1mcreating jenkins k8s cluster ..."
 gcloud container clusters create jenkins-cd --machine-type n1-standard-2 --num-nodes 2 --scopes "https://www.googleapis.com/auth/projecthosting,cloud-platform"
 gcloud container clusters list | grep jenkins-cd
 
+#set jenkins context
+export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $1}')
+kubectl config use-context $JENKINS_CONTEXT
+
 echo -e "\e[1mconfiguring the access rules ..."
 #Configure security: Add yourself as a cluster administrator in the cluster's RBAC so that you can give Jenkins permissions in the cluster
 kubectl create clusterrolebinding cluster-admin-binding --clusterrole=cluster-admin --user=$(gcloud config get-value account)

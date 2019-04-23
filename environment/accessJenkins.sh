@@ -1,4 +1,10 @@
 #!/bin/bash
+
+#set jenkins context
+export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $1}')
+kubectl config use-context $JENKINS_CONTEXT
+
+#get info
 export POD_NAME=$(kubectl get pods -l "component=cd-jenkins-master" -o jsonpath="{.items[0].metadata.name}")
 kubectl port-forward $POD_NAME 8080:8080 >> /dev/null &
 
