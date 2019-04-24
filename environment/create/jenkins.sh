@@ -11,7 +11,7 @@ gcloud container clusters create jenkins-cd --machine-type n1-standard-2 --num-n
 gcloud container clusters list | grep jenkins-cd
 
 #set jenkins context
-export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $1}')
+export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $2}')
 kubectl config use-context $JENKINS_CONTEXT
 
 echo -e "\e[1mconfiguring the access rules ..."
