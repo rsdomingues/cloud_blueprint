@@ -1,0 +1,13 @@
+green:
+  version: latest
+  enabled: false
+
+blue:
+  version: latest
+  enabled: false
+
+productionSlot: blue
+
+replicaCount: 1
+
+projectId: project

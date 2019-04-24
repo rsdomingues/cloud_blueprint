@@ -1,0 +1,27 @@
+{{ if .Values.green.enabled }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: fooapp-green
+  labels:
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: fooapp
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: fooapp
+        release: {{ .Release.Name }}
+        slot: green
+    spec:
+      containers:
+        - name: fooapp-green
+          image: gcr.io/{{ .Values.projectId }}/fooapp:{{ .Values.green.version }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+{{ end }}
