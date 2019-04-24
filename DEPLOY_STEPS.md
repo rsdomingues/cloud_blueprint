@@ -4,6 +4,75 @@
 We are going to take you step by step to build this blueprint on your own cloud environment. The flow we are implementing is:
 ![Developer Flow](./images/developer_flow.png)
 
+### (Step 0) Creating the GCP Environment
+
+Let's get started by creating our GCP environment, we will create the GKE environment for Development and Production, for the propouse of showing the worflow propoused in this blueprint. You can use the scripts and strategy to create other environments you may need.
+
+We also gona configure an Jenkins to manage the production deployment, in this way we are able to apply security polcies, and be able to keep using the principle of least privilege (PoLP), also known as the principle of minimal privilege used by google products.
+
+You will need the following tools available on your environment to use all our scripts:
+- [Google Cloud SDK](https://cloud.google.com/sdk/)
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+- [Helm](https://helm.sh/docs/install/#installing-helm)
+
+One good option is to use the [Google Cloud Shell](https://cloud.google.com/shell/docs/) that already has the tools instaled (apart from Helm).
+
+For the sake of save you time, we created several scripts tha can help you, if you want to know every thing that we are doing feel free to check then out, they are all in the [environment/create](https://github.com/rsdomingues/cloud_blueprint/tree/master/environment/create) folder.
+
+The following is the order that we suggest for the execution.
+
+```bash
+#go to the environment
+cd environment/create
+
+#be sure you have configured the environment
+gcloud info
+kubectl config view
+helm version
+
+#create the development environment (be sure to activate the GKE api first, in the Google Cloud Console)
+./development.sh
+
+#create the production environment (helm required)
+./production.sh
+```
+
+The jenkins we are going to break in 2 parts, the first is just the environment creation:
+
+```bash
+#go to the environment
+cd environment
+
+#create the jenkins GKE cluster using helm
+./create/jenkins.sh
+
+#The jenkins environment is not published in a URL by default, to access it use
+#the comand will give you the URL and the default password for the admin user
+./access/jenkins.sh
+```
+
+After creating the environment access the URL given by the script, use the password to gain access to the jenkins environment. In order to use the `deployment job creation script` provided we will need a user token. To create it select Pople.
+
+![Jenkins Home](images/jenkins_home.png)
+
+Then select the admin.
+
+![Jenkins User](images/jenkins_user.png)
+
+An finally, use the `Create token` option, save the token to use latter, it will not be shown to you again, if you lose it, you need to repeat this process (create a new token).
+
+![Jenkins Token](images/jenkins_token.png)
+
+Now you can jus use the script to create the job
+
+```bash
+#go to the environment
+cd environment/create
+
+#run the configuration script
+./deploymentjob.sh admin <token_generated_on_jenkins>
+```
+The job is created using the [Jenkins Declarative Pipeline](https://jenkins.io/doc/book/pipeline/), and the code for the pipeline is in the [pipelines/prodDeploy/Jenkinsfile](https://github.com/rsdomingues/cloud_blueprint/blob/master/pipelines/prodDeploy/Jenkinsfile) folter in this repository. You can check it out, or create your pipeline using the SCM directly.
 
 ### (Step 1) Creating your source code repository 
 ---
@@ -215,59 +284,39 @@ gcloud builds submit --config app/cloudbuild.yaml --substitutions=ENV_VAR="<VALU
 
 ### (setp 5 & 6) Deploying the application to other environments including production
 ---
-**TODO**
+The last step is to run the deployment to an specific environmento. In this repo you will find scripts to the production deployment, but you can use the same scripts to create as many enviroments as you need and use the same aproach to deploy it.
 
-##Creating one environment
----
-Let's start by creating our K8S cluster called `foocluster` on GKE. On you Google Cloud Shell:
-
+To execute the deployment go to the Jenkins Console, to access it just run:
 ```bash
-# Set your current prefered COMPUTE_ZONE for instance us-west1-a
-gcloud config set compute/zone [COMPUTE_ZONE]
+#go to the environment
+cd environment/access
 
-# Create the foocluster with defalt parameters
-gcloud container clusters create foocluster
+#The jenkins environment is not published in a URL by default, to access it use
+#the comand will give you the URL and the default password for the admin user
+./jenkins.sh
 ```
+Just access the "DeployToProd" Job and Click `Build with Parameters`, inform the application version that you want to deploy and then click `build`, by default it will use the latest witch may not be production ready.
 
-***Testing the environment (optional)***
-
-Creating the Deployment
-To run hello-app in your cluster, run the following command:
-
-```bash
-kubectl run hello-server --image gcr.io/google-samples/hello-app:1.0 --port 8080
-```
-This Kubernetes command, kubectl run, creates a new Deployment named hello-server. The Deployment's Pod runs the hello-app image in its container.
-
-In this command:
-
-- `image` specifies a container image to deploy. In this case, the command pulls the example image from a Google Container Registry bucket, gcr.io/google-samples/hello-app. :1.0 indicates the specific image version to pull. If a version is not specified, the latest version is used.
-- `port` specifies the port that the container exposes.
-
-To expose your application, run the following kubectl expose command:
-
-```bash
-kubectl expose deployment hello-server --type LoadBalancer \
-  --port 80 --target-port 8080
-```
-
-Inspect the hello-server Service by running kubectl get:
-```bash
-kubectl get service hello-server
-
-#Access the service by using http://[EXTERNAL_IP]/
-```
-
-**Clean up**
-To avoid incurring charges to your GCP account for the resources used in this sample:
-
-Delete the application's Service by running kubectl delete:
-
-```bash
-#This will delete the Compute Engine load balancer that you created when you exposed the deployment.
-kubectl delete service hello-server
+Then wait for it to finish, and you should see the result:
+![Jenkins Execution](images/jenkins_execution.png)
 
 
-#Delete your cluster by running gcloud container clusters delete:
-gcloud container clusters delete foocluster
-```
+The deployment use a blue/green strategy to ensure zero down time, first it update an Green environment with the new version, the green deployment do not have access from the production at this point, then it shift the production traffic to the green deployment, after that the script awaits the "go ahead" from the executor.
+
+![Blue/Green Strategy](images/blue-green.png)
+
+If the user gives the "go ahead", the script update the blue environment with the new version, witch does not have the production traffic and after that it shifts the production traffic back to production.
+
+If the user do not give the "go ahead" the script, just shift the production traffic back to the blue deployment without updating to the new version.
+
+
+### Conclusion
+
+Let’s face it, we have an increasing culture of immediacy that has impacted how people want to engage in all aspects of our lifes. With this blueprint we have a fully automated enviroment where both developers and operations have a fast feedback, compliance enforced, risk reduced way of working.
+
+This blueprint was created in a way that you can easely adapt parts of it to your specific needs:
+ 
+ - Build tool, from Google Cloud Build to Jenkins, Circle CI etc
+ - Deployment orchestration, from Jenkins to Spinnaker etc
+
+Any questions, or if you need any help let us know.
