@@ -1,5 +1,3 @@
-appversion = input(id: 'appversion', message: 'Please inform the application version that you want to deploy')
-
 pipeline {
   agent {
     kubernetes {
@@ -10,23 +8,13 @@ apiVersion: v1
 kind: Pod
 metadata:
 labels:
-  component: ci
+  component: CD
 spec:
   # Use service account that can deploy to all namespaces
   serviceAccountName: cd-jenkins
   containers:
-  - name: gcloud
-    image: gcr.io/cloud-builders/gcloud
-    command:
-    - cat
-    tty: true
-  - name: kubectl
-    image: gcr.io/cloud-builders/kubectl
-    command:
-    - cat
-    tty: true
   - name: helm
-    image: alpine/helm:2.13.1
+    image: greenwall/gcloud-kubectl-helm
     command:
     - cat
     tty: true  
@@ -34,11 +22,29 @@ spec:
     }
   }
   stages {
+    //get the application code 
+    stage('Clone sources') {
+        steps{
+          container('helm') {
+            git branch: 'blueprint', url: 'https://github.com/rsdomingues/cloud_blueprint.git' 
+          }
+        }
+    }
+
+    // set the correct context
+    stage('Set kubernet context') {
+      steps{
+        container('helm') {
+          sh("gcloud container clusters get-credentials fooclusterprd --zone us-west1-a")
+        }
+      }
+    }
+
     //update grenn deployment
     stage('Updating Green deployment') {
       steps{
         container('helm') {
-          sh("echo 'helm upgrade fooapp-chart ./k8s --set green.enabled=true --set green.version=${appversion} --set projectId=phoenix-cit --reuse-values'")
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set green.enabled=true --set green.version=${appVersion} --set projectId=phoenix-cit --reuse-values")
         }
       }
     }
@@ -47,7 +53,7 @@ spec:
     stage('Green Production') {
       steps{
         container('helm') {
-          sh("echo 'helm upgrade fooapp-chart ./k8s --set productionSlot=green --set projectId=phoenix-cit --reuse-values'")
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set productionSlot=green --set projectId=phoenix-cit --reuse-values")
         }
       }
     }
@@ -56,7 +62,7 @@ spec:
     stage('Updating Blue deployment') {
       steps{
         container('helm') {
-          sh("echo 'helm upgrade fooapp-chart ./k8s --set blue.enabled=true --set blue.version=${appversion} --set projectId=phoenix-cit --reuse-values'")
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set blue.enabled=true --set blue.version=${appVersion} --set projectId=phoenix-cit --reuse-values")
         }
       }
     }
@@ -65,7 +71,7 @@ spec:
     stage('Blue Production') {
       steps{
         container('helm') {
-          sh("echo 'helm upgrade fooapp-chart ./k8s --set productionSlot=blue --set projectId=phoenix-cit --reuse-values'")
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set productionSlot=blue --set projectId=phoenix-cit --reuse-values")
         }
       }
     }
