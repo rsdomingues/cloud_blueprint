@@ -1,0 +1,73 @@
+appversion = input(id: 'appversion', message: 'Please inform the application version that you want to deploy')
+
+pipeline {
+  agent {
+    kubernetes {
+      label 'fooapp'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+  component: ci
+spec:
+  # Use service account that can deploy to all namespaces
+  serviceAccountName: cd-jenkins
+  containers:
+  - name: gcloud
+    image: gcr.io/cloud-builders/gcloud
+    command:
+    - cat
+    tty: true
+  - name: kubectl
+    image: gcr.io/cloud-builders/kubectl
+    command:
+    - cat
+    tty: true
+  - name: helm
+    image: alpine/helm:2.13.1
+    command:
+    - cat
+    tty: true  
+"""
+    }
+  }
+  stages {
+    //update grenn deployment
+    stage('Updating Green deployment') {
+      steps{
+        container('helm') {
+          sh("echo 'helm upgrade fooapp-chart ./k8s --set green.enabled=true --set green.version=${appversion} --set projectId=phoenix-cit --reuse-values'")
+        }
+      }
+    }
+
+    //change productionSlot to the temporary green with the new version
+    stage('Green Production') {
+      steps{
+        container('helm') {
+          sh("echo 'helm upgrade fooapp-chart ./k8s --set productionSlot=green --set projectId=phoenix-cit --reuse-values'")
+        }
+      }
+    }
+
+    //update blue deployment
+    stage('Updating Blue deployment') {
+      steps{
+        container('helm') {
+          sh("echo 'helm upgrade fooapp-chart ./k8s --set blue.enabled=true --set blue.version=${appversion} --set projectId=phoenix-cit --reuse-values'")
+        }
+      }
+    }
+
+    //#change productionSlot to the definitive blue deployent
+    stage('Blue Production') {
+      steps{
+        container('helm') {
+          sh("echo 'helm upgrade fooapp-chart ./k8s --set productionSlot=blue --set projectId=phoenix-cit --reuse-values'")
+        }
+      }
+    }
+  }
+}
