@@ -1,0 +1,114 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.31">
+    <actions>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.8"/>
+        <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.3.8">
+            <jobProperties/>
+            <triggers/>
+            <parameters/>
+            <options/>
+        </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+    </actions>
+    <description></description>
+    <keepDependencies>false</keepDependencies>
+    <properties>
+        <hudson.model.ParametersDefinitionProperty>
+            <parameterDefinitions>
+                <hudson.model.StringParameterDefinition>
+                    <name>appVersion</name>
+                    <description>The application version that you are trying to deploy</description>
+                    <defaultValue>latest</defaultValue>
+                    <trim>false</trim>
+                </hudson.model.StringParameterDefinition>
+            </parameterDefinitions>
+        </hudson.model.ParametersDefinitionProperty>
+        <org.jenkinsci.plugins.workflow.job.properties.DisableConcurrentBuildsJobProperty/>
+        <org.jenkinsci.plugins.workflow.job.properties.DisableResumeJobProperty/>
+    </properties>
+    <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.67">
+        <script>pipeline {
+  agent {
+    kubernetes {
+      label 'fooapp'
+      defaultContainer 'jnlp'
+      yaml """
+apiVersion: v1
+kind: Pod
+metadata:
+labels:
+  component: CD
+spec:
+  # Use service account that can deploy to all namespaces
+  serviceAccountName: cd-jenkins
+  containers:
+  - name: helm
+    image: greenwall/gcloud-kubectl-helm
+    command:
+    - cat
+    tty: true  
+"""
+    }
+  }
+  stages {
+    //get the application code 
+    stage('Clone sources') {
+        steps{
+          container('helm') {
+            git branch: 'blueprint', url: 'https://github.com/rsdomingues/cloud_blueprint.git' 
+          }
+        }
+    }
+
+    // set the correct context
+    stage('Set kubernet context') {
+      steps{
+        container('helm') {
+          sh("gcloud container clusters get-credentials fooclusterprd --zone us-west1-a")
+        }
+      }
+    }
+
+    //update grenn deployment
+    stage('Updating Green deployment') {
+      steps{
+        container('helm') {
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set green.enabled=true --set green.version=${appVersion} --set projectId=phoenix-cit --reuse-values")
+        }
+      }
+    }
+
+    //change productionSlot to the temporary green with the new version
+    stage('Green Production') {
+      steps{
+        container('helm') {
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set productionSlot=green --set projectId=phoenix-cit --reuse-values")
+        }
+      }
+    }
+
+    //update blue deployment
+    stage('Updating Blue deployment') {
+      steps{
+        container('helm') {
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set blue.enabled=true --set blue.version=${appVersion} --set projectId=phoenix-cit --reuse-values")
+        }
+      }
+    }
+
+    //#change productionSlot to the definitive blue deployent
+    stage('Blue Production') {
+      steps{
+        container('helm') {
+          sh("helm upgrade fooapp-chart ./pipelines/prodDeploy/k8s/ --set productionSlot=blue --set projectId=phoenix-cit --reuse-values")
+        }
+      }
+    }
+  }
+}
+
+        </script>
+        <sandbox>true</sandbox>
+    </definition>
+    <triggers/>
+    <disabled>false</disabled>
+</flow-definition>

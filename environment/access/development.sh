@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set dev context
-export DEV_CONTEXT=$(kubectl config get-contexts | grep fooclusterdev | awk 'END {print $1}')
+export DEV_CONTEXT=$(kubectl config get-contexts | grep fooclusterdev | awk 'END {print $2}')
 kubectl config use-context $DEV_CONTEXT
 
 #access the applications

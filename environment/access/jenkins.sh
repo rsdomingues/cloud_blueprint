@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set jenkins context
-export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $1}')
+export JENKINS_CONTEXT=$(kubectl config get-contexts | grep jenkins-cd | awk 'END {print $2}')
 kubectl config use-context $JENKINS_CONTEXT
 
 #get info
