@@ -52,12 +52,14 @@ Containers are also a way of bridging the gap between development and operation,
 
 In that matter GCP is verry well positioned with the Google Kubernets Engine (GKE). That provide a fully managed kubernets enviroment. Another diferentiator of the GCP is that you can use [GKE on-prem](https://cloud.google.com/gke-on-prem/) or even better [Anthos](https://cloud.google.com/anthos/) to achive a hybrid cloud and keep you production environment inside the house for regulatory propouse.
 
-In this blueprint we will explore only the cloud GKE environment to execute deployment, but it can be easyly adjust for [GKE on-prem](https://cloud.google.com/gke-on-prem/) or [Anthos](https://cloud.google.com/anthos/) usecases.
+In this blueprint we will explore only the cloud GKE environment to execute deployment, but it is compliance with [GKE on-prem](https://cloud.google.com/gke-on-prem/) or [Anthos](https://cloud.google.com/anthos/) usecases.
 
 ### Deployment strategy
 ![Blueprint deployment](./images/blue-green.png)
 
 Blue/Green deployment strategy using Google Cloud targeting a polyglot application deployed to an GKE Cluster. Istio is used to shape traffic to different versions of the same microservice giving full control on what your users see and controlling the flow of releases throughout the pipeline.
+
+To get more technical details or configure this blueprint on your own environment just follow the [Deploy Steps](./DEPLOY_STEPS.md)
 
 
 ### Who created this blueprint 
