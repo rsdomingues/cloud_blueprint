@@ -180,6 +180,8 @@ If the user tests give the “go ahead”, the script updates the blue environme
 
 If the user does not give the “go ahead” the script, just shift the production traffic back to the blue deployment without updating to the new version.
 
+**Conclusion** 
+
 Let’s face it, we have an increasing culture of immediacy that has impacted how people want to engage in all aspects of our lives. Hopefully, with this article you have the ability to reproduce this fully automated environment where both developers and operations have fast feedback, compliance enforced, risk-reduced way of working.
 
 This example was crafted in a way that you can easily adapt parts of it to your specific needs:
@@ -189,5 +191,3 @@ This example was crafted in a way that you can easily adapt parts of it to your 
 * Deployment orchestration, from Jenkins to Spinnaker, etc
 
 If you have any questions or suggestions please leave a comment here or on Github, and if you have an improvement please send me a pull request.
-
-Project code: [https://github.com/rsdomingues/cloud_blueprint](https://github.com/rsdomingues/cloud_blueprint)
