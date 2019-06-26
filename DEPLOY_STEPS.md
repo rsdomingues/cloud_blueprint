@@ -1,9 +1,6 @@
 # Building the blueprint step by step
 ![CI&T Logo](https://us.ciandt.com/themes/custom/ciandt/images/ciandt-logo-for-light.png)
 
-We are going to take you step by step to build this blueprint on your own cloud environment. The flow we are implementing is:
-![Developer Flow](./images/developer_flow.png)
-
 This project is going to take you to step by step to build this pipeline on your own cloud environment. The flow we are implementing is:
 
 ![](https://cdn-images-1.medium.com/max/2000/0*TLInRnW04skzzCfv.png)
