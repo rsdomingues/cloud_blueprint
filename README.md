@@ -1,75 +1,52 @@
 # Github Google Cloud Blueprint for FinServ
-A FinServ microservice DevOps blueprint to kickstart a successful software development workflow on Google Cloud Plataform and Github
 
-This repository contains instructions for implanting our opinioneted DevOps workflow on GCP to facilitate the creation of microservices solutions, that are compliance to industry standards and regulations and still provide the development team a fast and realiable environment.
+![](https://cdn-images-1.medium.com/max/2048/1*QS_c6vAjhA6chOusy2mELA.png)
 
-This blueprint helps you visualize what a modern development workflow looks like and how it could be implemented in organizations at scale, using a baseline definition that can be expanded as needed depending on specific requirements.
+Microservice and DevOps go hand in hand when we are talking about the speed of development. In this simple article, I will try to create a blueprint to help you kickstart software development workflow on Google Cloud Platform and Github
 
-# Blueprint Description
+We need to build a development flow that enables developers to have fast feedback from their work and connect that work in a secure and fast way to the production environment.
 
-In general lines, we are going to build a development flow that enables developers to have fast feedback from their work, and how it impacted the software component during a feature development. When a feature is in a good enought state the work can be integrated to the aplication. The good enought will be verified via pull request with automatic checks and code review. When it is integraded to the aplication a new set of quality gateways will be applied and then automaticly deployed to a development environmenrt for testing propouses. After validating it can be delployed to other environments in an automated matter, in conjunction to a blue/green deployment strategy that ensure low risk deployments.  
+What that flow should look like?
 
-The following diagram shows the main responsabilitys, we will explore in more details each phase and step of the process.
+The following diagram shows the main responsibilities, we will explore in more details each phase and step of the process.
 
-![Strategic Workflow](./images/strategic_workflow.png)
+![](https://cdn-images-1.medium.com/max/2000/1*TnawOxDhSYmKtmHq7SsybA.png)
 
+## Technical requirements
 
-This flow is designed to allows collaborators to leverage an agile workflow while tracking all work items for regulatory purposes. The tight integration offered by the GKE solution simplifies the deployment and operations of a Kubernetes based “service mesh” and enables teams to dynamically scale the application infrastructure with confidence and agility. All covered with an DevOps Flow that enable security and speed.
+**The application (test subject)**
 
-
-## Techinical details
----
-Now let's explore each step of the process in details:
-
-**The application** 
-
-For this DevOps workflow we need an sample app, for this we are going to use the [FooApp](https://github.com/rsdomingues/cloud_blueprint/tree/master/fooapp), wich is an simple cloud native java application build on top of the [Spring Cloud Framework](https://spring.io/projects/spring-cloud). Feel free to explore it, because it has some example of automated testing, clean architecture and some other stuff.
+For this DevOps workflow, we need a sample app, for this, we are going to use the [FooApp](https://github.com/rsdomingues/cloud_blueprint/tree/master/fooapp), which is a simple cloud-native java application build on top of the [Spring Cloud Framework](https://spring.io/projects/spring-cloud). Feel free to explore it, because it has some example of automated testing, clean architecture, and some other stuff.
 
 **Development process**
-To give our developer the ability to focus on the application managment part we are going to build a fully automated pipeline that will take our code to produciton. For compliance and security we are going to insert "control gates" on the pipeline for our binaries, so that we can ensure that the "builded and tested" aplication is deployed sucessully in risk free way to the production environment.
 
-![Developer Flow](./images/developer_flow.png)
+To give our developer the ability to focus on the application management part we need to build a fully automated pipeline that will take our code from the SCM repository to production.
 
-**Source Control Managment**
+For quality and security, we are going to insert “control gates” on the pipeline for our binaries, so that we can ensure that the “built and tested” application is deployed successfully in a risk-free way to the production environment.
 
-One big importante element to the teams productivity is the SCM process, to enable fast and secure development. Nowadays there are two main aproachs used by most companies, Gitflow and Trunk Based Development (TDB). While TDB provide a much faster aproach, for most teams it is dificult do adopt it, due to culture changes involved in the way of work. Also due to security reasons most finserv companies need to keep a closer track of what is happening on their source code and who is checking and aproving the chages.
+**Source Control Management**
 
-All things considered, this blueprint make use of the Gitflow aproach, but we highly recommend working with a reduced model of branchs and planning on the changes needed for the trunk based aproach, because of the speed and conection it provides between development and production.
+One big important element to team productivity is the SCM process, to enable fast and secure development. There are two main approaches used by most companies, Gitflow and Trunk Based Development (TDB). While TDB provides a much faster approach, for most teams it is difficult to adopt it, due to culture changes involved in the way of work.
 
-**Project Managment**
-
-For project managment we are going to use Jira, so that we can control the issues and tickers for the entire development process not only for development issues.
+All things considered, in this case, I chose to use the Gitflow approach, simply because it has a better chance to help more people. Even using Gitflow I highly recommend working with a reduced model of branches and planning on how to change it to trunk based development approach, because of the speed and connection it provides between development and production.
 
 **Packaging and Deploy**
 
-For the infrasctructures needs to create and configure the GCP environment (or in fact any other cloud provider) we highlly recomend the use of an Infrastructure as a service (such as terraform). 
+For the application packaging, my belief is that modern application should use Containers, they provide a real-world proved way of paring production and development, reducing issues with snowflake environments. Besides that most cloud providers have some sort of Platform as a Service for containers which gives you a good way of simplifying your production environment.
 
-For the application packaging, our belive is that modern application should use Containers, they provide a real world proved way of paring production and development, reducing issues with snowflake enviroments. Beside that most cloud providers have some sort of Platform as a Service for containers witch gives you a good way of simplifing you production enviroment.
-
-Containers are also a way of bridging the gap between development and operation, giving developers an open and realiable way to use a higher amout of tecnologies and still given operation a simple way to manage every thing.
+Containers are also a way of bridging the gap between development and operation, giving developers an open and reliable way to select the best technology for the problem and still give the operation team a simple way to manage everything.
 
 **Running Environments**
 
-In that matter GCP is verry well positioned with the Google Kubernets Engine (GKE). That provide a fully managed kubernets enviroment. Another diferentiator of the GCP is that you can use [GKE on-prem](https://cloud.google.com/gke-on-prem/) or even better [Anthos](https://cloud.google.com/anthos/) to achive a hybrid cloud and keep you production environment inside the house for regulatory propouse.
+Manually managing containers is a time-consuming hard task, that requires a lot of effort. There are several options for container manager in the real world, like Kubernetes, Rancher, Open-Shift and Apache Mesos to name a few. These tools provide a simpler, faster and more secure way of working with containers.
 
-In this blueprint we will explore only the cloud GKE environment to execute deployment, but it is compliance with [GKE on-prem](https://cloud.google.com/gke-on-prem/) or [Anthos](https://cloud.google.com/anthos/) usecases.
+**Deployment Strategy**
 
-### Deployment strategy
-![Blueprint deployment](./images/blue-green.png)
+Going down for maintenance or deployment is always a bad release strategy. In today's digital world that is even worst. There are several alternatives the enables us to have a less UX impactful release, such as Blue/Gren deployment, Canary Release, Rolling updates to name a few.
 
-Blue/Green deployment strategy using Google Cloud targeting a polyglot application deployed to an GKE Cluster. Istio is used to shape traffic to different versions of the same microservice giving full control on what your users see and controlling the flow of releases throughout the pipeline.
+In this scenario, I will choose the Blue/Green deployment, there are a lot of tools and support for this type of approach, it is a simple approach and it enables us to have a fast and reliable rollback out of the box too.
 
-To get more technical details or configure this blueprint on your own environment just follow the [Deploy Steps](./DEPLOY_STEPS.md)
-
-
-### Who created this blueprint 
-
-CI&T is a global digital technology solutions partner, that can help you achive your digital transformation through business, tecnology and people. A pioneer in design thinking, lean digital transformation, and advanced technologies. For over 20 years, CI&T has been a trusted partner of industry leading brands. 
-
-This bluprint was created by our spetialist team to help you on your digital solutions path.
-
-If you like it, or want to know more, contact us: https://us.ciandt.com/
-![CI&T Logo](https://us.ciandt.com/themes/custom/ciandt/images/ciandt-logo-for-light.png) 
+Stay tuned for the next piece, where I am going to guide you through a step-by-step example on how to build your workflow.
 
 ### Useful links
 ---
