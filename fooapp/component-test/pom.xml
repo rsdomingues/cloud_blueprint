@@ -24,7 +24,7 @@
     <junit.version>4.12</junit.version>
     <maven.compiler.version>3.3</maven.compiler.version>
     <lombok.version>1.16.16</lombok.version>
-    <spring.boot.version>1.5.4.RELEASE</spring.boot.version>
+    <spring.boot.version>2.2.11.RELEASE</spring.boot.version>
     <fixture.version>3.1.0</fixture.version>
     <aws-java-sdk-dynamodb.version>1.11.150</aws-java-sdk-dynamodb.version>
     <spring-data-dynamodb.version>4.5.0</spring-data-dynamodb.version>
